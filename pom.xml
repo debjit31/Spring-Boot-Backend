@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.BloodDonationApp</groupId>
 	<artifactId>bloodDonationApp</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>blood.donation.v0.1</version>
 	<name>bloodDonationApp</name>
 	<description>Backend Project for Spring Boot</description>
 	<properties>
