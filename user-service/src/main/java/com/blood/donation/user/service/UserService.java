@@ -2,6 +2,12 @@ package com.blood.donation.user.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,7 +22,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
 
-    public User registerUser(UserRegistrationRequest userRegistrationRequest) {
+    public User registerUser(UserRegistrationRequest userRegistrationRequest) throws JSONException {
         String newUserEmailAddress = userRegistrationRequest.getEmail();
         boolean isUserWithEmailAddressExists = userRepository.findByEmailAddress(newUserEmailAddress).isEmpty();
         if (isUserWithEmailAddressExists) {
@@ -30,10 +36,26 @@ public class UserService {
                     .build();
             log.info("User saved in DB {}", userToBeSaved);
 
+            updateSecretsForUser(userToBeSaved.getId(), userRegistrationRequest.getPassword());
+
             return userRepository.save(userToBeSaved);
         } else {
             return null;
         }
+    }
+
+    private void updateSecretsForUser(String customerId, String password) throws JSONException {
+        String updateSecretsUrl = "http://localhost:8081/api/v1/passwords";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        JSONObject secretsObject = new JSONObject();
+        secretsObject.put("customerId",customerId);
+        secretsObject.put("password", password);
+        HttpEntity<String> postRequest = new HttpEntity<String>(secretsObject.toString(), headers);
+        ResponseEntity<String> response = restTemplate
+                .postForEntity(updateSecretsUrl, postRequest, String.class);
+        String respStatus = response.getBody();
+        log.info("Secrets Update Status is : " + respStatus + " for customer with Customer Id : - " + secretsObject.get("customerId"));
     }
 
     public String getUserId() {

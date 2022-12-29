@@ -1,6 +1,7 @@
 package com.blood.donation.user.service;
 
 import lombok.AllArgsConstructor;
+import org.json.JSONException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserRegistrationResponse> registerUser(@RequestBody UserRegistrationRequest userRegistrationRequest) {
+    public ResponseEntity<UserRegistrationResponse> registerUser(@RequestBody UserRegistrationRequest userRegistrationRequest) throws JSONException {
         User newUser = userService.registerUser(userRegistrationRequest);
 
         if(newUser == null){

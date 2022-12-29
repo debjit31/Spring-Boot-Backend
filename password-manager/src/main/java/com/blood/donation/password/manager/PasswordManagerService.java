@@ -11,13 +11,18 @@ public class PasswordManagerService {
 
     private final PasswordManagerRepository passwordManagerRepository;
 
-    public void savePassword(PasswordRequest passwordRequest){
+    public String savePassword(PasswordRequest passwordRequest){
         Password password = Password.builder()
                 .customerId(passwordRequest.getCustomerId())
                 .password(passwordRequest.getPassword())
                 .build();
-        passwordManagerRepository.save(password);
         log.info("Secrets updated for customer with Customer Id : {}", password.getCustomerId());
-
+        try{
+            passwordManagerRepository.save(password);
+            return "SUCCESS";
+        }catch (Exception e){
+            e.printStackTrace();
+            return "FAILURE";
+        }
     }
 }
